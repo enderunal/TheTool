@@ -1,0 +1,22 @@
+{
+    "name": "thetool-screenshots",
+    "version": "1.0.0",
+    "description": "Screenshot automation for TheTool Chrome extension",
+    "main": "index.js",
+    "scripts": {
+        "screenshots": "node screenshots.js",
+        "screenshots:popup": "node screenshots.js popup",
+        "screenshots:options": "node screenshots.js options",
+        "screenshots:themes": "node screenshots.js themes",
+        "screenshots:promo": "node screenshots.js promo",
+        "screenshots:all": "node screenshots.js all",
+        "test": "node test.js",
+        "setup": "node setup.js"
+    },
+    "dependencies": {
+        "playwright": "^1.40.0"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.40.0"
+    }
+}

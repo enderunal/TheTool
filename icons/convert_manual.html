@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG to PNG Converter</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .converter {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            text-align: center;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .color-option.selected {
+            border-color: #667eea;
+            background: #f0f0f0;
+        }
+
+        .color-option svg {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 8px;
+        }
+
+        .preview {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .size-preview {
+            text-align: center;
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        canvas {
+            border: 1px solid #ddd;
+            margin: 10px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>SVG to PNG Icon Converter</h1>
+    <p>Choose a premium gender-neutral color and convert the SVG icon to PNG format in multiple sizes for Chrome
+        extension use.</p>
+
+    <div class="converter">
+        <h3>Premium Gender-Neutral Color Options</h3>
+        <div class="color-options" id="colorOptions">
+            <!-- Color options will be populated by JavaScript -->
+        </div>
+
+        <h3>SVG Preview</h3>
+        <div id="svg-container"></div>
+        <button onclick="convertAll()">Convert to PNG</button>
+        <button onclick="downloadAll()">Download All</button>
+    </div>
+
+    <div class="preview" id="preview">
+        <div class="size-preview">
+            <h4>16x16</h4>
+            <canvas id="canvas16" width="16" height="16"></canvas>
+            <br>
+            <button onclick="downloadPNG(16)">Download</button>
+        </div>
+
+        <div class="size-preview">
+            <h4>48x48</h4>
+            <canvas id="canvas48" width="48" height="48"></canvas>
+            <br>
+            <button onclick="downloadPNG(48)">Download</button>
+        </div>
+
+        <div class="size-preview">
+            <h4>128x128</h4>
+            <canvas id="canvas128" width="128" height="128"></canvas>
+            <br>
+            <button onclick="downloadPNG(128)">Download</button>
+        </div>
+    </div>
+
+    <script>
+        let svgData = '';
+        let selectedColor = 'purple';
+
+        // SVG sources for different premium gender-neutral colors
+        const svgSources = {
+            purple: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="16" ry="16" fill="url(#bgGradient)" stroke="#ffffff" stroke-width="2"/>
+  <text x="64" y="88" font-family="Georgia, 'Times New Roman', serif" font-size="80" font-weight="bold" text-anchor="middle" fill="#ffffff" letter-spacing="1">T</text>
+</svg>`,
+            gold: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ffb347;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#daa520;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="16" ry="16" fill="url(#bgGradient)" stroke="#ffffff" stroke-width="2"/>
+  <text x="64" y="88" font-family="Georgia, 'Times New Roman', serif" font-size="80" font-weight="bold" text-anchor="middle" fill="#ffffff" letter-spacing="1">T</text>
+</svg>`,
+            silver: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c0c0c0;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#a8a8a8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#808080;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="16" ry="16" fill="url(#bgGradient)" stroke="#374151" stroke-width="2"/>
+  <text x="64" y="88" font-family="Georgia, 'Times New Roman', serif" font-size="80" font-weight="bold" text-anchor="middle" fill="#374151" letter-spacing="1">T</text>
+</svg>`,
+            platinum: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e5e4e2;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#d3d3d3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b8b8b8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="16" ry="16" fill="url(#bgGradient)" stroke="#374151" stroke-width="2"/>
+  <text x="64" y="88" font-family="Georgia, 'Times New Roman', serif" font-size="80" font-weight="bold" text-anchor="middle" fill="#374151" letter-spacing="1">T</text>
+</svg>`,
+            obsidian: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2d3748;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1a202c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f1419;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="16" ry="16" fill="url(#bgGradient)" stroke="#ffffff" stroke-width="2"/>
+  <text x="64" y="88" font-family="Georgia, 'Times New Roman', serif" font-size="80" font-weight="bold" text-anchor="middle" fill="#ffffff" letter-spacing="1">T</text>
+</svg>`,
+            bronze: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#cd7f32;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#b8860b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b4513;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="16" ry="16" fill="url(#bgGradient)" stroke="#ffffff" stroke-width="2"/>
+  <text x="64" y="88" font-family="Georgia, 'Times New Roman', serif" font-size="80" font-weight="bold" text-anchor="middle" fill="#ffffff" letter-spacing="1">T</text>
+</svg>`,
+            copper: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#b87333;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#a0522d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b4513;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="16" ry="16" fill="url(#bgGradient)" stroke="#ffffff" stroke-width="2"/>
+  <text x="64" y="88" font-family="Georgia, 'Times New Roman', serif" font-size="80" font-weight="bold" text-anchor="middle" fill="#ffffff" letter-spacing="1">T</text>
+</svg>`,
+            emerald: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#059669;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#047857;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="16" ry="16" fill="url(#bgGradient)" stroke="#ffffff" stroke-width="2"/>
+  <text x="64" y="88" font-family="Georgia, 'Times New Roman', serif" font-size="80" font-weight="bold" text-anchor="middle" fill="#ffffff" letter-spacing="1">T</text>
+</svg>`,
+            sapphire: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="16" ry="16" fill="url(#bgGradient)" stroke="#ffffff" stroke-width="2"/>
+  <text x="64" y="88" font-family="Georgia, 'Times New Roman', serif" font-size="80" font-weight="bold" text-anchor="middle" fill="#ffffff" letter-spacing="1">T</text>
+</svg>`,
+            ruby: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#dc2626;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b91c1c;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="16" ry="16" fill="url(#bgGradient)" stroke="#ffffff" stroke-width="2"/>
+  <text x="64" y="88" font-family="Georgia, 'Times New Roman', serif" font-size="80" font-weight="bold" text-anchor="middle" fill="#ffffff" letter-spacing="1">T</text>
+</svg>`
+        };
+
+        function createColorOptions() {
+            const container = document.getElementById('colorOptions');
+            const colors = [
+                { name: 'purple', label: 'Purple' },
+                { name: 'gold', label: 'Gold' },
+                { name: 'silver', label: 'Silver' },
+                { name: 'platinum', label: 'Platinum' },
+                { name: 'obsidian', label: 'Obsidian' },
+                { name: 'bronze', label: 'Bronze' },
+                { name: 'copper', label: 'Copper' },
+                { name: 'emerald', label: 'Emerald' },
+                { name: 'sapphire', label: 'Sapphire' },
+                { name: 'ruby', label: 'Ruby' }
+            ];
+
+            colors.forEach(color => {
+                const div = document.createElement('div');
+                div.className = 'color-option';
+                div.innerHTML = `
+                    <div>${svgSources[color.name]}</div>
+                    <div>${color.label}</div>
+                `;
+                div.onclick = () => selectColor(color.name);
+                container.appendChild(div);
+            });
+        }
+
+        function selectColor(color) {
+            selectedColor = color;
+            document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+            event.target.closest('.color-option').classList.add('selected');
+            loadSVG();
+        }
+
+        function loadSVG() {
+            const container = document.getElementById('svg-container');
+            container.innerHTML = svgSources[selectedColor];
+            svgData = svgSources[selectedColor];
+            convertAll();
+        }
+
+        function convertAll() {
+            if (!svgData) {
+                loadSVG();
+                return;
+            }
+
+            const sizes = [16, 48, 128];
+            sizes.forEach(size => {
+                const canvas = document.getElementById(`canvas${size}`);
+                const ctx = canvas.getContext('2d');
+
+                const img = new Image();
+                img.onload = function () {
+                    ctx.clearRect(0, 0, size, size);
+                    ctx.drawImage(img, 0, 0, size, size);
+                };
+                img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+            });
+        }
+
+        function downloadPNG(size) {
+            const canvas = document.getElementById(`canvas${size}`);
+            const link = document.createElement('a');
+            link.download = `icon${size}_${selectedColor}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        function downloadAll() {
+            const sizes = [16, 48, 128];
+            sizes.forEach(size => {
+                setTimeout(() => downloadPNG(size), size * 10);
+            });
+        }
+
+        // Auto-load on page load
+        window.onload = function () {
+            createColorOptions();
+            loadSVG();
+        };
+    </script>
+</body>
+
+</html>

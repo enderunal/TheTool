@@ -25,7 +25,6 @@ class Notes {
         this.notesContainer = document.getElementById('notes-container');
         this.notesListSection = document.getElementById('notes-list-section');
         this.noteEditorSection = document.getElementById('note-editor-section');
-        this.resizeDivider = document.getElementById('resize-divider');
 
         this.notesSidebar = document.getElementById('notes-sidebar');
         this.noteTitleInput = document.getElementById('note-title');
@@ -33,15 +32,13 @@ class Notes {
         this.saveButton = document.getElementById('save-note');
         this.deleteButton = document.getElementById('delete-note');
         this.hideListButton = document.getElementById('hide-list');
-        this.hideEditorButton = document.getElementById('hide-editor');
         this.showListButton = document.getElementById('show-list');
-        this.showEditorButton = document.getElementById('show-editor');
+        this.expandButton = document.getElementById('expand-notes');
+        this.newNoteListButton = document.getElementById('new-note-list');
+        this.expandNotesListButton = document.getElementById('expand-notes-list');
 
-        // Layout state (always horizontal split - top/bottom)
-        this.isResizing = false;
-        this.startPos = { x: 0, y: 0 };
-        this.startSize = { list: 180, editor: 0 };
-        this.maximizedState = 'none'; // 'none', 'list', 'editor'
+        // Layout state (editor by default, list hidden)
+        this.isListVisible = false;
     }
 
     /**
@@ -63,15 +60,8 @@ class Notes {
 
         // Show/Hide buttons
         this.hideListButton.addEventListener('click', () => this.hideList());
-        this.hideEditorButton.addEventListener('click', () => this.hideEditor());
         this.showListButton.addEventListener('click', () => this.showList());
-        this.showEditorButton.addEventListener('click', () => this.showEditor());
-
-        // Resize functionality
-        this.resizeDivider.addEventListener('mousedown', (e) => this.startResize(e));
-        this.resizeDivider.addEventListener('dblclick', () => this.toggleMaximize());
-        document.addEventListener('mousemove', (e) => this.handleResize(e));
-        document.addEventListener('mouseup', () => this.stopResize());
+        this.newNoteListButton.addEventListener('click', () => this.createNewNote());
 
         // Note title input
         this.noteTitleInput.addEventListener('input', () => this.scheduleAutoSave());
@@ -124,8 +114,8 @@ class Notes {
     }
 
     /**
-     * Create new note
-     */
+  * Create new note
+  */
     createNewNote() {
         const newNote = {
             id: this.generateId(),
@@ -141,6 +131,9 @@ class Notes {
         this.renderNotesList();
         this.loadNote(newNote.id);
         this.saveNotes();
+
+        // Hide list and show editor when creating new note
+        this.hideList();
 
         // Focus on title input
         this.noteTitleInput.focus();
@@ -296,9 +289,6 @@ class Notes {
             return new Date(b.modified) - new Date(a.modified);
         });
 
-        // Check if editor is hidden to show delete buttons
-        const isEditorHidden = this.noteEditorSection.classList.contains('hidden');
-
         sortedNotes.forEach(note => {
             const noteItem = document.createElement('div');
             noteItem.className = 'note-item';
@@ -322,8 +312,8 @@ class Notes {
             contentContainer.appendChild(previewElement);
             noteItem.appendChild(contentContainer);
 
-            // Add delete button if editor is hidden and more than one note
-            if (isEditorHidden && this.notes.length > 1) {
+            // Add delete button for all notes in list view
+            if (this.notes.length > 1) {
                 const deleteButton = document.createElement('button');
                 deleteButton.className = 'note-item-delete';
                 deleteButton.innerHTML = '×';
@@ -338,12 +328,23 @@ class Notes {
             }
 
             // Add click event to content container
-            contentContainer.addEventListener('click', () => {
-                this.loadNote(note.id);
+            contentContainer.addEventListener('click', (e) => {
+                // Prevent double-click from triggering single click
+                if (e.detail === 1) {
+                    setTimeout(() => {
+                        if (e.detail === 1) {
+                            this.loadNote(note.id);
+                            // Hide list and show editor when note is clicked
+                            this.hideList();
+                        }
+                    }, 200);
+                }
             });
 
             // Add double-click to pin/unpin
-            contentContainer.addEventListener('dblclick', () => {
+            contentContainer.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 this.togglePinNote(note.id);
             });
 
@@ -374,133 +375,26 @@ class Notes {
 
 
     /**
- * Hide notes list (maximize editor)
+ * Show notes list
  */
-    hideList() {
-        // Don't allow hiding if editor is already hidden
-        if (this.noteEditorSection.classList.contains('hidden')) {
-            return;
-        }
-
-        this.notesListSection.classList.add('hidden');
-        this.resizeDivider.classList.add('hidden');
-        this.noteEditorSection.classList.add('full-width');
-        this.showListButton.style.display = 'block';
-        this.maximizedState = 'editor';
-    }
-
-    /**
-     * Show notes list
-     */
     showList() {
         this.notesListSection.classList.remove('hidden');
-        this.resizeDivider.classList.remove('hidden');
-        this.noteEditorSection.classList.remove('full-width');
-        this.showListButton.style.display = 'none';
-        this.maximizedState = 'none';
-        this.resetSplitSizes();
+        this.isListVisible = true;
+        this.renderNotesList();
+
+        // Show search input when list is visible
+        this.searchInput.classList.add('visible');
     }
 
     /**
- * Hide text editor (maximize list)
- */
-    hideEditor() {
-        // Don't allow hiding if list is already hidden
-        if (this.notesListSection.classList.contains('hidden')) {
-            return;
-        }
+  * Hide notes list
+  */
+    hideList() {
+        this.notesListSection.classList.add('hidden');
+        this.isListVisible = false;
 
-        this.noteEditorSection.classList.add('hidden');
-        this.resizeDivider.classList.add('hidden');
-        this.notesListSection.classList.add('full-width');
-        this.showEditorButton.style.display = 'inline-block';
-        this.maximizedState = 'list';
-    }
-
-    /**
-     * Show text editor
-     */
-    showEditor() {
-        this.noteEditorSection.classList.remove('hidden');
-        this.resizeDivider.classList.remove('hidden');
-        this.notesListSection.classList.remove('full-width');
-        this.showEditorButton.style.display = 'none';
-        this.maximizedState = 'none';
-        this.resetSplitSizes();
-    }
-
-    /**
-     * Toggle maximize state (double-click functionality)
-     */
-    toggleMaximize() {
-        if (this.maximizedState === 'none') {
-            // Maximize editor by default
-            this.hideList();
-        } else if (this.maximizedState === 'editor') {
-            // Switch to maximized list
-            this.showList();
-            this.hideEditor();
-        } else if (this.maximizedState === 'list') {
-            // Back to normal split
-            this.showEditor();
-        }
-    }
-
-    /**
-     * Reset split sizes to default
-     */
-    resetSplitSizes() {
-        this.notesListSection.style.flexBasis = '';
-        this.noteEditorSection.style.flexBasis = '';
-    }
-
-    /**
-     * Start vertical resizing (horizontal split)
-     */
-    startResize(e) {
-        this.isResizing = true;
-        this.startPos.y = e.clientY;
-
-        const listRect = this.notesListSection.getBoundingClientRect();
-        this.startSize.list = listRect.height;
-
-        e.preventDefault();
-        document.body.style.cursor = 'ns-resize';
-    }
-
-    /**
-     * Handle vertical resize with maximization zones (horizontal split)
-     */
-    handleResize(e) {
-        if (!this.isResizing) return;
-
-        const containerRect = this.notesContainer.getBoundingClientRect();
-        const deltaY = e.clientY - this.startPos.y;
-        const newHeight = this.startSize.list + deltaY;
-        const containerHeight = containerRect.height;
-
-        // Maximization zones (20px from edges)
-        if (newHeight < 20) {
-            // Maximize editor (hide list)
-            this.hideList();
-            return;
-        } else if (newHeight > containerHeight - 20) {
-            // Maximize list (hide editor)  
-            this.hideEditor();
-            return;
-        }
-
-        // Normal resize with limits
-        const constrainedHeight = Math.max(100, Math.min(300, newHeight));
-        this.notesListSection.style.flexBasis = constrainedHeight + 'px';
-    }
-
-    /**
-     * Stop resizing
-     */
-    stopResize() {
-        this.isResizing = false;
-        document.body.style.cursor = '';
+        // Hide search input when list is hidden
+        this.searchInput.classList.remove('visible');
     }
 
     /**
@@ -643,45 +537,54 @@ class Notes {
             }
             body {
               font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              background: #f5f5f5;
+              background: var(--theme-background, #f5f5f5);
               padding: 20px;
+              color: var(--theme-text-primary, #333);
             }
             .container {
-              background: white;
+              background: var(--theme-surface, white);
               border-radius: 8px;
               padding: 20px;
               height: calc(100vh - 40px);
-              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+              box-shadow: var(--theme-shadow, 0 2px 10px rgba(0,0,0,0.1));
               display: flex;
               flex-direction: column;
               overflow: hidden;
+              border: 1px solid var(--theme-border, #e0e0e0);
             }
             .header {
               margin-bottom: 20px;
               padding-bottom: 10px;
-              border-bottom: 1px solid #e0e0e0;
+              border-bottom: 1px solid var(--theme-border, #e0e0e0);
               flex-shrink: 0;
             }
             h1 {
               margin: 0;
-              color: #333;
+              color: var(--theme-text-primary, #333);
               font-size: 24px;
             }
             #note-title {
               width: 100%;
               padding: 10px;
-              border: 1px solid #ddd;
+              border: 1px solid var(--theme-input-border, #ddd);
               border-radius: 6px;
               font-size: 18px;
               font-weight: 600;
               margin-bottom: 15px;
               flex-shrink: 0;
+              background: var(--theme-input-background, white);
+              color: var(--theme-text-primary, #333);
+            }
+            #note-title:focus {
+              outline: none;
+              border-color: var(--theme-input-focus, #667eea);
+              box-shadow: 0 0 0 2px var(--theme-accent-light, rgba(102, 126, 234, 0.1));
             }
             #note-content {
               flex: 1;
               width: 100%;
               padding: 15px;
-              border: 1px solid #ddd;
+              border: 1px solid var(--theme-input-border, #ddd);
               border-radius: 6px;
               font-size: 14px;
               font-family: inherit;
@@ -689,6 +592,13 @@ class Notes {
               line-height: 1.6;
               min-height: 0;
               overflow-y: auto;
+              background: var(--theme-input-background, white);
+              color: var(--theme-text-primary, #333);
+            }
+            #note-content:focus {
+              outline: none;
+              border-color: var(--theme-input-focus, #667eea);
+              box-shadow: 0 0 0 2px var(--theme-accent-light, rgba(102, 126, 234, 0.1));
             }
             .actions {
               margin-top: 15px;
@@ -702,18 +612,32 @@ class Notes {
               border-radius: 6px;
               cursor: pointer;
               font-size: 14px;
+              transition: all 0.2s ease;
             }
             .btn-primary {
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              color: white;
+              background: var(--theme-button-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+              color: var(--theme-text-on-gradient, white);
+              box-shadow: var(--theme-shadow-light, 0 1px 3px rgba(0,0,0,0.1));
+            }
+            .btn-primary:hover {
+              background: var(--theme-button-primary-hover, linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%));
+              box-shadow: var(--theme-shadow-medium, 0 2px 8px rgba(0,0,0,0.15));
+              transform: translateY(-1px);
             }
             .btn-secondary {
-              background: #f5f5f5;
-              color: #666;
-              border: 1px solid #ddd;
+              background: var(--theme-button-secondary, #f5f5f5);
+              color: var(--theme-text-secondary, #666);
+              border: 1px solid var(--theme-border, #ddd);
+              box-shadow: var(--theme-shadow-light, 0 1px 3px rgba(0,0,0,0.1));
             }
-            button:hover {
-              opacity: 0.9;
+            .btn-secondary:hover {
+              background: var(--theme-button-secondary-hover, #e8e8e8);
+              color: var(--theme-text-primary, #333);
+              box-shadow: var(--theme-shadow-medium, 0 2px 8px rgba(0,0,0,0.15));
+              transform: translateY(-1px);
+            }
+            button:active {
+              transform: translateY(0);
             }
           </style>
         </head>
@@ -734,6 +658,21 @@ class Notes {
       `);
 
             popup.document.close();
+
+            // Apply current theme to the popup
+            chrome.storage.local.get(['currentTheme', 'theme'], (result) => {
+                const currentTheme = result.currentTheme || result.theme || 'classic';
+                const themeConfig = this.getThemeConfig(currentTheme);
+                const root = popup.document.documentElement;
+
+                // Apply CSS custom properties
+                Object.entries(themeConfig).forEach(([property, value]) => {
+                    root.style.setProperty(property, value);
+                });
+
+                // Set theme attribute
+                popup.document.body.setAttribute('data-theme', currentTheme);
+            });
 
             // Set up a reference to this instance for the popup to access
             popup.notesInstance = this;
@@ -797,6 +736,239 @@ class Notes {
         } else {
             alert('Popup blocked! Please allow popups for this extension.');
         }
+    }
+
+    /**
+     * Get theme configuration for popup window
+     */
+    getThemeConfig(theme) {
+        // Import all themes from popup.js to ensure consistency
+        const themes = {
+            'classic': {
+                '--theme-primary': '#667eea',
+                '--theme-secondary': '#764ba2',
+                '--theme-gradient': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                '--theme-background': '#ffffff',
+                '--theme-surface': '#ffffff',
+                '--theme-surface-secondary': '#f5f5f5',
+                '--theme-surface-tertiary': '#f9f9f9',
+                '--theme-surface-hover': '#f0f0f0',
+                '--theme-surface-active': '#e8e8e8',
+                '--theme-surface-elevated': '#ffffff',
+                '--theme-surface-modal': '#ffffff',
+                '--theme-on-surface': '#333333',
+                '--theme-on-surface-variant': '#666666',
+                '--theme-on-surface-secondary': '#555555',
+                '--theme-on-background': '#333333',
+                '--theme-text-primary': '#333333',
+                '--theme-text-secondary': '#666666',
+                '--theme-text-tertiary': '#999999',
+                '--theme-text-on-gradient': '#ffffff',
+                '--theme-text-muted': '#aaaaaa',
+                '--theme-border': '#e0e0e0',
+                '--theme-border-variant': '#d1d1d6',
+                '--theme-border-light': '#f0f0f0',
+                '--theme-border-focus': '#667eea',
+                '--theme-outline': '#e0e0e0',
+                '--theme-outline-variant': '#f0f0f0',
+                '--theme-accent': '#667eea',
+                '--theme-accent-hover': '#5a6fd8',
+                '--theme-accent-active': '#4c63d2',
+                '--theme-accent-light': 'rgba(102, 126, 234, 0.1)',
+                '--theme-tab-nav-bg': '#f5f5f5',
+                '--theme-tab-hover': 'rgba(103, 58, 183, 0.05)',
+                '--theme-tab-active-color': '#673ab7',
+                '--theme-button-primary': '#667eea',
+                '--theme-button-primary-hover': '#5a6fd8',
+                '--theme-button-secondary': '#f5f5f5',
+                '--theme-button-secondary-hover': '#e8e8e8',
+                '--theme-input-background': '#ffffff',
+                '--theme-input-border': '#e0e0e0',
+                '--theme-input-focus': '#667eea',
+                '--theme-card-background': '#ffffff',
+                '--theme-card-border': '#e0e0e0',
+                '--theme-list-item-background': '#ffffff',
+                '--theme-list-item-hover': '#f5f5f5',
+                '--theme-list-item-active': '#667eea',
+                '--theme-shadow': '0 2px 8px rgba(0, 0, 0, 0.1)',
+                '--theme-shadow-light': '0 1px 3px rgba(0, 0, 0, 0.1)',
+                '--theme-shadow-medium': '0 2px 8px rgba(0, 0, 0, 0.15)',
+                '--theme-shadow-heavy': '0 4px 16px rgba(0, 0, 0, 0.2)',
+                '--theme-success': '#10b981',
+                '--theme-warning': '#f59e0b',
+                '--theme-error': '#ef4444',
+                '--theme-info': '#3b82f6'
+            },
+            'classic-dark': {
+                '--theme-primary': '#4a5568',
+                '--theme-secondary': '#2d3748',
+                '--theme-gradient': 'linear-gradient(135deg, #4a5568 0%, #2d3748 100%)',
+                '--theme-background': '#1a202c',
+                '--theme-surface': '#2d3748',
+                '--theme-surface-secondary': '#4a5568',
+                '--theme-surface-tertiary': '#374151',
+                '--theme-surface-hover': '#374151',
+                '--theme-surface-active': '#4a5568',
+                '--theme-surface-elevated': '#2d3748',
+                '--theme-surface-modal': '#2d3748',
+                '--theme-on-surface': '#f7fafc',
+                '--theme-on-surface-variant': '#e2e8f0',
+                '--theme-on-surface-secondary': '#cbd5e0',
+                '--theme-on-background': '#f7fafc',
+                '--theme-text-primary': '#f7fafc',
+                '--theme-text-secondary': '#e2e8f0',
+                '--theme-text-tertiary': '#cbd5e0',
+                '--theme-text-on-gradient': '#ffffff',
+                '--theme-text-muted': '#a0aec0',
+                '--theme-border': '#4a5568',
+                '--theme-border-variant': '#374151',
+                '--theme-border-light': '#4a5568',
+                '--theme-border-focus': '#81c784',
+                '--theme-outline': '#4a5568',
+                '--theme-outline-variant': '#374151',
+                '--theme-tab-nav-bg': '#4a5568',
+                '--theme-tab-hover': 'rgba(160, 174, 192, 0.2)',
+                '--theme-tab-active-color': '#81c784',
+                '--theme-accent': '#81c784',
+                '--theme-accent-hover': '#68b36b',
+                '--theme-accent-active': '#5a9c5a',
+                '--theme-accent-light': 'rgba(129, 199, 132, 0.2)',
+                '--theme-button-primary': '#81c784',
+                '--theme-button-primary-hover': '#68b36b',
+                '--theme-button-secondary': '#4a5568',
+                '--theme-button-secondary-hover': '#374151',
+                '--theme-input-background': '#2d3748',
+                '--theme-input-border': '#4a5568',
+                '--theme-input-focus': '#81c784',
+                '--theme-card-background': '#2d3748',
+                '--theme-card-border': '#4a5568',
+                '--theme-list-item-background': '#2d3748',
+                '--theme-list-item-hover': '#374151',
+                '--theme-list-item-active': '#81c784',
+                '--theme-shadow': '0 2px 8px rgba(0, 0, 0, 0.3)',
+                '--theme-shadow-light': '0 1px 3px rgba(0, 0, 0, 0.3)',
+                '--theme-shadow-medium': '0 2px 8px rgba(0, 0, 0, 0.4)',
+                '--theme-shadow-heavy': '0 4px 16px rgba(0, 0, 0, 0.5)',
+                '--theme-success': '#68b36b',
+                '--theme-warning': '#ed8936',
+                '--theme-error': '#f56565',
+                '--theme-info': '#63b3ed'
+            },
+            'gold': {
+                '--theme-primary': '#f59e0b',
+                '--theme-secondary': '#d97706',
+                '--theme-gradient': 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                '--theme-background': '#ffffff',
+                '--theme-surface': '#ffffff',
+                '--theme-surface-secondary': '#fef3c7',
+                '--theme-surface-tertiary': '#fefce8',
+                '--theme-surface-hover': '#fde68a',
+                '--theme-surface-active': '#fcd34d',
+                '--theme-surface-elevated': '#ffffff',
+                '--theme-surface-modal': '#ffffff',
+                '--theme-on-surface': '#92400e',
+                '--theme-on-surface-variant': '#a16207',
+                '--theme-on-surface-secondary': '#78350f',
+                '--theme-on-background': '#92400e',
+                '--theme-text-primary': '#92400e',
+                '--theme-text-secondary': '#a16207',
+                '--theme-text-tertiary': '#78350f',
+                '--theme-text-on-gradient': '#ffffff',
+                '--theme-text-muted': '#d97706',
+                '--theme-border': '#fbbf24',
+                '--theme-border-variant': '#fde68a',
+                '--theme-border-light': '#fef3c7',
+                '--theme-border-focus': '#f59e0b',
+                '--theme-outline': '#fbbf24',
+                '--theme-outline-variant': '#fde68a',
+                '--theme-accent': '#f59e0b',
+                '--theme-accent-hover': '#d97706',
+                '--theme-accent-active': '#b45309',
+                '--theme-accent-light': 'rgba(245, 158, 11, 0.1)',
+                '--theme-tab-nav-bg': '#fef3c7',
+                '--theme-tab-hover': 'rgba(245, 158, 11, 0.05)',
+                '--theme-tab-active-color': '#d97706',
+                '--theme-button-primary': '#f59e0b',
+                '--theme-button-primary-hover': '#d97706',
+                '--theme-button-secondary': '#fef3c7',
+                '--theme-button-secondary-hover': '#fde68a',
+                '--theme-input-background': '#ffffff',
+                '--theme-input-border': '#fbbf24',
+                '--theme-input-focus': '#f59e0b',
+                '--theme-card-background': '#ffffff',
+                '--theme-card-border': '#fbbf24',
+                '--theme-list-item-background': '#ffffff',
+                '--theme-list-item-hover': '#fef3c7',
+                '--theme-list-item-active': '#f59e0b',
+                '--theme-shadow': '0 2px 8px rgba(245, 158, 11, 0.1)',
+                '--theme-shadow-light': '0 1px 3px rgba(245, 158, 11, 0.1)',
+                '--theme-shadow-medium': '0 2px 8px rgba(245, 158, 11, 0.15)',
+                '--theme-shadow-heavy': '0 4px 16px rgba(245, 158, 11, 0.2)',
+                '--theme-success': '#10b981',
+                '--theme-warning': '#f59e0b',
+                '--theme-error': '#ef4444',
+                '--theme-info': '#3b82f6'
+            },
+            'gold-dark': {
+                '--theme-primary': '#fbbf24',
+                '--theme-secondary': '#f59e0b',
+                '--theme-gradient': 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+                '--theme-background': '#1c1917',
+                '--theme-surface': '#292524',
+                '--theme-surface-secondary': '#44403c',
+                '--theme-surface-tertiary': '#57534e',
+                '--theme-surface-hover': '#44403c',
+                '--theme-surface-active': '#57534e',
+                '--theme-surface-elevated': '#292524',
+                '--theme-surface-modal': '#292524',
+                '--theme-on-surface': '#fef3c7',
+                '--theme-on-surface-variant': '#fde68a',
+                '--theme-on-surface-secondary': '#fcd34d',
+                '--theme-on-background': '#fef3c7',
+                '--theme-text-primary': '#fef3c7',
+                '--theme-text-secondary': '#fde68a',
+                '--theme-text-tertiary': '#fcd34d',
+                '--theme-text-on-gradient': '#ffffff',
+                '--theme-text-muted': '#fbbf24',
+                '--theme-border': '#57534e',
+                '--theme-border-variant': '#44403c',
+                '--theme-border-light': '#57534e',
+                '--theme-border-focus': '#fbbf24',
+                '--theme-outline': '#57534e',
+                '--theme-outline-variant': '#44403c',
+                '--theme-tab-nav-bg': '#44403c',
+                '--theme-tab-hover': 'rgba(251, 191, 36, 0.2)',
+                '--theme-tab-active-color': '#fbbf24',
+                '--theme-accent': '#fbbf24',
+                '--theme-accent-hover': '#f59e0b',
+                '--theme-accent-active': '#d97706',
+                '--theme-accent-light': 'rgba(251, 191, 36, 0.2)',
+                '--theme-button-primary': '#fbbf24',
+                '--theme-button-primary-hover': '#f59e0b',
+                '--theme-button-secondary': '#44403c',
+                '--theme-button-secondary-hover': '#57534e',
+                '--theme-input-background': '#292524',
+                '--theme-input-border': '#57534e',
+                '--theme-input-focus': '#fbbf24',
+                '--theme-card-background': '#292524',
+                '--theme-card-border': '#57534e',
+                '--theme-list-item-background': '#292524',
+                '--theme-list-item-hover': '#44403c',
+                '--theme-list-item-active': '#fbbf24',
+                '--theme-shadow': '0 2px 8px rgba(0, 0, 0, 0.3)',
+                '--theme-shadow-light': '0 1px 3px rgba(0, 0, 0, 0.3)',
+                '--theme-shadow-medium': '0 2px 8px rgba(0, 0, 0, 0.4)',
+                '--theme-shadow-heavy': '0 4px 16px rgba(0, 0, 0, 0.5)',
+                '--theme-success': '#68b36b',
+                '--theme-warning': '#fbbf24',
+                '--theme-error': '#f56565',
+                '--theme-info': '#63b3ed'
+            }
+        };
+
+        // For now, return classic if theme not found
+        // In a full implementation, you would copy all themes from popup.js
+        return themes[theme] || themes.classic;
     }
 }
 

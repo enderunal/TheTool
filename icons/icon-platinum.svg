@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Background rounded square with premium platinum gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e5e4e2;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#d3d3d3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b8b8b8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background rounded square -->
+  <rect x="4" y="4" width="120" height="120" rx="16" ry="16" fill="url(#bgGradient)" stroke="#374151" stroke-width="2"/>
+  
+  <!-- Letter T - larger and premium font -->
+  <text x="64" y="88" font-family="Georgia, 'Times New Roman', serif" font-size="80" font-weight="bold" text-anchor="middle" fill="#374151" letter-spacing="1">T</text>
+</svg>

@@ -57,6 +57,13 @@
                     <polyline points="14,2 14,8 20,8" />
                 </svg>
             </button>
+            <button class="tab-button options-button" id="options-button" title="Options">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="m12 1 1.09 3.26L16 5l-0.74 1.23L18 8l-1.23 0.74L16 11l-2.91 0.74L12 15l-1.09-3.26L8 11l0.74-1.23L6 8l1.23-0.74L8 5l2.91-0.74L12 1z" />
+                </svg>
+            </button>
         </div>
 
         <!-- Tab Content -->
@@ -241,37 +248,17 @@
                     <div class="notes-search">
                         <input type="text" id="search-notes" placeholder="Search notes...">
                     </div>
-                    <div class="notes-actions">
-                        <button id="new-note" class="btn-primary">+ New</button>
-                        <button id="expand-notes" class="btn-secondary" title="Expand Notes">⛶</button>
-                    </div>
+
                     <div class="notes-container" id="notes-container">
-                        <!-- Notes List -->
-                        <div class="notes-list-section" id="notes-list-section">
-                            <div class="notes-list-header">
-                                <span>Notes</span>
-                                <div class="header-buttons">
-                                    <button id="show-editor" class="btn-secondary" style="display: none;"
-                                        title="Show Text Editor">Editor</button>
-                                    <button id="hide-list" class="hide-btn" title="Hide Notes List">×</button>
-                                </div>
-                            </div>
-                            <div id="notes-sidebar">
-                                <!-- Notes list will be populated here -->
-                            </div>
-                        </div>
-
-                        <!-- Resizable Divider -->
-                        <div class="resize-divider" id="resize-divider"></div>
-
-                        <!-- Note Editor -->
+                        <!-- Note Editor (Default View) -->
                         <div class="note-editor-section" id="note-editor-section">
                             <div class="editor-controls-row">
+                                <button id="new-note" class="btn-primary">New</button>
                                 <button id="save-note" class="btn-secondary">Save</button>
                                 <button id="delete-note" class="btn-secondary">Delete</button>
                                 <div class="spacer"></div>
-                                <button id="show-list" class="btn-secondary" style="display: none;">Show List</button>
-                                <button id="hide-editor" class="hide-btn" title="Hide Text Editor">×</button>
+                                <button id="show-list" class="btn-secondary" title="Show Notes List">Notes</button>
+                                <button id="expand-notes" class="btn-secondary" title="Expand Notes">⛶</button>
                             </div>
                             <div class="editor-title-row">
                                 <input type="text" id="note-title" placeholder="Note title...">
@@ -279,7 +266,19 @@
                             <textarea id="note-content" placeholder="Start writing your note..."></textarea>
                         </div>
 
-
+                        <!-- Notes List (Hidden by default) -->
+                        <div class="notes-list-section hidden" id="notes-list-section">
+                            <div class="notes-list-header">
+                                <span>Notes List</span>
+                                <div class="header-buttons">
+                                    <button id="new-note-list" class="btn-primary">New</button>
+                                    <button id="hide-list" class="hide-btn" title="Hide Notes List">×</button>
+                                </div>
+                            </div>
+                            <div id="notes-sidebar">
+                                <!-- Notes list will be populated here -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
