@@ -1,6 +1,6 @@
 # Privacy Policy for TheTool
 
-**Last updated: January 2024**
+**Last updated: January 2025**
 
 ## NO DATA COLLECTION
 
