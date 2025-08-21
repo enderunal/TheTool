@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheTool - Options</title>
+    <link rel="stylesheet" href="options.css">
+    <style>
+        /* Override for standalone mode */
+        body {
+            width: 800px;
+            height: 600px;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .options-container {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="options-container">
+        <div class="options-header">
+            <h1>TheTool - All-in-One Productivity Tools</h1>
+        </div>
+        
+        <div class="options-navigation">
+            <button class="nav-button active" data-tab="appearance" id="appearance-tab">Appearance</button>
+            <button class="nav-button" data-tab="about" id="about-tab">About</button>
+        </div>
+        
+        <div class="options-content">
+            <div id="appearance-content" class="tab-panel active">
+                <div class="theme-section">
+                    <h2>Choose Theme</h2>
+                    <div class="theme-grid">
+                        <div class="theme-card" data-theme="classic">
+                            <div class="theme-preview classic"></div>
+                            <div class="theme-name">Classic</div>
+                        </div>
+                        <div class="theme-card" data-theme="classic-dark">
+                            <div class="theme-preview classic-dark"></div>
+                            <div class="theme-name">Classic Dark</div>
+                        </div>
+                        <div class="theme-card" data-theme="gold">
+                            <div class="theme-preview gold"></div>
+                            <div class="theme-name">Gold</div>
+                        </div>
+                        <div class="theme-card" data-theme="gold-dark">
+                            <div class="theme-preview gold-dark"></div>
+                            <div class="theme-name">Gold Dark</div>
+                        </div>
+                        <div class="theme-card" data-theme="platinum">
+                            <div class="theme-preview platinum"></div>
+                            <div class="theme-name">Platinum</div>
+                        </div>
+                        <div class="theme-card" data-theme="platinum-dark">
+                            <div class="theme-preview platinum-dark"></div>
+                            <div class="theme-name">Platinum Dark</div>
+                        </div>
+                        <div class="theme-card" data-theme="obsidian">
+                            <div class="theme-preview obsidian"></div>
+                            <div class="theme-name">Obsidian</div>
+                        </div>
+                        <div class="theme-card" data-theme="obsidian-dark">
+                            <div class="theme-preview obsidian-dark"></div>
+                            <div class="theme-name">Obsidian Dark</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="about-content" class="tab-panel">
+                <div class="about-section">
+                    <h2>About TheTool</h2>
+                    <p>TheTool is an all-in-one productivity Chrome extension that provides quick access to essential tools.</p>
+                    
+                    <h3>Features</h3>
+                    <ul class="feature-list">
+                        <li>Calculator</li>
+                        <li>Stopwatch</li>
+                        <li>Countdown Timer</li>
+                        <li>Pomodoro Timer</li>
+                        <li>Quick-view Calendar</li>
+                        <li>Notes</li>
+                    </ul>
+                    
+                    <h3>Version</h3>
+                    <p>Version 1.0.0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html>

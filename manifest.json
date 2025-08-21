@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "TheTool - All-in-One Productivity Tools",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Quick access calculator, stopwatch, timer, pomodoro, calendar and notes utility",
     "permissions": [
         "storage",
@@ -30,5 +30,18 @@
     },
     "background": {
         "service_worker": "background.js"
-    }
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "privacy.html",
+                "license.html",
+                "privacy.js",
+                "license.js"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
 }

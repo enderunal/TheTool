@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheTool - All-in-One Productivity Tools</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 1400px;
+            height: 560px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
+        .left-section {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .logo {
+            font-size: 120px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+        .title {
+            font-size: 64px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .subtitle {
+            font-size: 24px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        .features {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .feature {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 30px;
+            font-size: 18px;
+            backdrop-filter: blur(10px);
+        }
+        .right-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+        .mockup {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        .mockup-content {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 400px;
+        }
+        .mockup-item {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="left-section">
+        <div class="logo">T</div>
+        <div class="title">TheTool</div>
+        <div class="subtitle">All-in-One Productivity Tools</div>
+        <div class="features">
+            <div class="feature">Calculator</div>
+            <div class="feature">Stopwatch</div>
+            <div class="feature">Timer</div>
+            <div class="feature">Pomodoro</div>
+            <div class="feature">Calendar</div>
+            <div class="feature">Notes</div>
+        </div>
+    </div>
+    <div class="right-section">
+        <div class="mockup">
+            <div class="mockup-content">
+                <div class="mockup-item">📊 Calculator</div>
+                <div class="mockup-item">⏱️ Stopwatch</div>
+                <div class="mockup-item">⏰ Timer</div>
+                <div class="mockup-item">🍅 Pomodoro</div>
+                <div class="mockup-item">📅 Calendar</div>
+                <div class="mockup-item">📝 Notes</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

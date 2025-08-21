@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheTool - All-in-One Productivity Tools</title>
+    <link rel="stylesheet" href="popup.css">
+    <style>
+        /* Override for standalone mode */
+        body {
+            width: 400px;
+            height: 600px;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .popup-container {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="popup-container">
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="calculator" id="calculator-tab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2v-2h2v2zm0-4h-2v-2h2v2zm-4 4h-2v-2h2v2zm0-4h-2v-2h2v2zm-4 4H6v-2h2v2zm0-4H6v-2h2v2z"/>
+                </svg>
+                Calculator
+            </button>
+            <button class="tab-button" data-tab="stopwatch" id="stopwatch-tab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                Stopwatch
+            </button>
+            <button class="tab-button" data-tab="timer" id="timer-tab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z"/>
+                </svg>
+                Timer
+            </button>
+            <button class="tab-button" data-tab="pomodoro" id="pomodoro-tab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                </svg>
+                Pomodoro
+            </button>
+            <button class="tab-button" data-tab="calendar" id="calendar-tab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                </svg>
+                Calendar
+            </button>
+            <button class="tab-button" data-tab="notes" id="notes-tab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                </svg>
+                Notes
+            </button>
+            <button class="tab-button options-button" id="options-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="tab-content">
+            <div id="calculator-content" class="tab-panel active">
+                <div class="calculator">
+                    <div class="calculator-display">
+                        <div class="calculator-history"></div>
+                        <div class="calculator-input">0</div>
+                    </div>
+                    <div class="calculator-buttons">
+                        <button class="calc-btn" data-action="clear">C</button>
+                        <button class="calc-btn" data-action="backspace">⌫</button>
+                        <button class="calc-btn" data-action="percent">%</button>
+                        <button class="calc-btn operator" data-action="divide">÷</button>
+                        
+                        <button class="calc-btn" data-action="7">7</button>
+                        <button class="calc-btn" data-action="8">8</button>
+                        <button class="calc-btn" data-action="9">9</button>
+                        <button class="calc-btn operator" data-action="multiply">×</button>
+                        
+                        <button class="calc-btn" data-action="4">4</button>
+                        <button class="calc-btn" data-action="5">5</button>
+                        <button class="calc-btn" data-action="6">6</button>
+                        <button class="calc-btn operator" data-action="subtract">−</button>
+                        
+                        <button class="calc-btn" data-action="1">1</button>
+                        <button class="calc-btn" data-action="2">2</button>
+                        <button class="calc-btn" data-action="3">3</button>
+                        <button class="calc-btn operator" data-action="add">+</button>
+                        
+                        <button class="calc-btn" data-action="0">0</button>
+                        <button class="calc-btn" data-action="decimal">.</button>
+                        <button class="calc-btn" data-action="parentheses">(</button>
+                        <button class="calc-btn equals" data-action="equals">=</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stopwatch-content" class="tab-panel">
+                <div class="stopwatch">
+                    <div class="stopwatch-display">00:00:00.000</div>
+                    <div class="stopwatch-controls">
+                        <button class="stopwatch-btn" id="start-stopwatch">Start</button>
+                        <button class="stopwatch-btn" id="lap-stopwatch">Lap</button>
+                        <button class="stopwatch-btn" id="reset-stopwatch">Reset</button>
+                    </div>
+                    <div class="lap-times"></div>
+                </div>
+            </div>
+
+            <div id="timer-content" class="tab-panel">
+                <div class="timer">
+                    <div class="timer-display">00:00:00</div>
+                    <div class="timer-input">
+                        <div class="time-input-group">
+                            <input type="number" id="hours" min="0" max="99" value="0">
+                            <label>H</label>
+                        </div>
+                        <div class="time-input-group">
+                            <input type="number" id="minutes" min="0" max="59" value="0">
+                            <label>M</label>
+                        </div>
+                        <div class="time-input-group">
+                            <input type="number" id="seconds" min="0" max="59" value="0">
+                            <label>S</label>
+                        </div>
+                    </div>
+                    <div class="timer-presets">
+                        <button class="preset-btn" data-time="30">30s</button>
+                        <button class="preset-btn" data-time="45">45s</button>
+                        <button class="preset-btn" data-time="60">1m</button>
+                        <button class="preset-btn" data-time="300">5m</button>
+                        <button class="preset-btn" data-time="600">10m</button>
+                        <button class="preset-btn" data-time="1800">30m</button>
+                    </div>
+                    <div class="timer-controls">
+                        <button class="timer-btn" id="start-timer">Start</button>
+                        <button class="timer-btn" id="pause-timer">Pause</button>
+                        <button class="timer-btn" id="reset-timer">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pomodoro-content" class="tab-panel">
+                <div class="pomodoro">
+                    <div class="pomodoro-display">25:00</div>
+                    <div class="pomodoro-phase">Focus Time</div>
+                    <div class="pomodoro-controls">
+                        <button class="pomodoro-btn" id="start-pomodoro">Start</button>
+                        <button class="pomodoro-btn" id="pause-pomodoro">Pause</button>
+                        <button class="pomodoro-btn" id="reset-pomodoro">Reset</button>
+                        <button class="pomodoro-btn" id="skip-pomodoro">Skip</button>
+                    </div>
+                    <div class="pomodoro-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Focus:</span>
+                            <span class="stat-value" id="total-focus">0 min</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Completed:</span>
+                            <span class="stat-value" id="completed-pomodoros">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="calendar-content" class="tab-panel">
+                <div class="calendar">
+                    <div class="calendar-header">
+                        <button class="calendar-nav" id="prev-month">‹</button>
+                        <div class="calendar-title">
+                            <select id="month-select">
+                                <option value="0">January</option>
+                                <option value="1">February</option>
+                                <option value="2">March</option>
+                                <option value="3">April</option>
+                                <option value="4">May</option>
+                                <option value="5">June</option>
+                                <option value="6">July</option>
+                                <option value="7">August</option>
+                                <option value="8">September</option>
+                                <option value="9">October</option>
+                                <option value="10">November</option>
+                                <option value="11">December</option>
+                            </select>
+                            <select id="year-select"></select>
+                        </div>
+                        <button class="calendar-nav" id="next-month">›</button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <div class="weekday">Sun</div>
+                        <div class="weekday">Mon</div>
+                        <div class="weekday">Tue</div>
+                        <div class="weekday">Wed</div>
+                        <div class="weekday">Thu</div>
+                        <div class="weekday">Fri</div>
+                        <div class="weekday">Sat</div>
+                    </div>
+                    <div class="calendar-grid" id="calendar-grid"></div>
+                </div>
+            </div>
+
+            <div id="notes-content" class="tab-panel">
+                <div class="notes-container">
+                    <div class="notes-list-section full-width">
+                        <div class="notes-list-header">
+                            <span>Notes List</span>
+                            <div class="header-buttons">
+                                <button id="new-note-list">New</button>
+                                <button id="expand-notes-list">Expand Notes</button>
+                                <button id="hide-list">×</button>
+                            </div>
+                        </div>
+                        <div class="notes-search visible">
+                            <input type="text" id="search-notes" placeholder="Search notes...">
+                        </div>
+                        <div class="notes-list" id="notes-list">
+                            <div class="note-item">
+                                <div class="note-title">Sample Note</div>
+                                <div class="note-preview">This is a sample note for demonstration...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+    <script src="calculator.js"></script>
+    <script src="stopwatch.js"></script>
+    <script src="timer.js"></script>
+    <script src="pomodoro.js"></script>
+    <script src="calendar.js"></script>
+    <script src="notes.js"></script>
+</body>
+</html>

@@ -1,16 +1,26 @@
-MIT License
+TheTool License
 
-Copyright (c) [2025] [enderunal]
+Copyright (c) 2024 TheTool Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+in the Software in the following ways:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. **Open Source Use**: You may use, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software for any open source purpose, provided that
+   the above copyright notice and this permission notice appear in all copies.
+
+2. **Commercial Use**: You may use, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software for commercial purposes ONLY IF:
+   - You open source your entire project that uses this Software
+   - You license your project under this same license
+   - You include the original copyright notice and this permission notice
+   - You clearly indicate which parts of your project are derived from this Software
+
+3. **Attribution**: Any distribution of the Software must include:
+   - The original copyright notice
+   - A link to the original source code repository
+   - This license text
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -18,4 +28,6 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE. 
+SOFTWARE.
+
+For questions about this license, please contact the project maintainers. 

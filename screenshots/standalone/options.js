@@ -30,9 +30,9 @@ class OptionsManager {
         }
 
         // Link buttons
-        this.reportIssueButton = document.getElementById('report-issue');
         this.privacyButton = document.getElementById('privacy-policy');
-        this.licenseButton = document.getElementById('license');
+        this.supportButton = document.getElementById('support');
+        this.feedbackButton = document.getElementById('feedback');
     }
 
     initializeEventListeners() {
@@ -60,21 +60,21 @@ class OptionsManager {
         });
 
         // Link buttons
-        if (this.reportIssueButton) {
-            this.reportIssueButton.addEventListener('click', () => {
-                chrome.tabs.create({ url: 'https://github.com/enderunal/TheTool/issues' });
-            });
-        }
-
         if (this.privacyButton) {
             this.privacyButton.addEventListener('click', () => {
-                chrome.tabs.create({ url: chrome.runtime.getURL('privacy.html') });
+                chrome.tabs.create({ url: 'https://example.com/privacy' });
             });
         }
 
-        if (this.licenseButton) {
-            this.licenseButton.addEventListener('click', () => {
-                chrome.tabs.create({ url: chrome.runtime.getURL('license.html') });
+        if (this.supportButton) {
+            this.supportButton.addEventListener('click', () => {
+                chrome.tabs.create({ url: 'https://example.com/support' });
+            });
+        }
+
+        if (this.feedbackButton) {
+            this.feedbackButton.addEventListener('click', () => {
+                chrome.tabs.create({ url: 'mailto:support@example.com?subject=TheTool Feedback' });
             });
         }
     }
