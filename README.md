@@ -28,6 +28,10 @@ A powerful Chrome extension providing instant access to essential productivity t
 
 ![Notes](screenshots/output/popup_notes_classic_640x400.png)
 
+### ⚙️ **Options Page**
+
+![Options](screenshots/output/options_appearance_classic_640x400.png)
+
 ## ⚡ Performance Features
 
 - **Zero animations** - Instant tool switching for maximum speed
